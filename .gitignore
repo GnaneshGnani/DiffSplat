@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.DS_Store
+
+DiffSplat/
+data/gso_rendered/
+out/
