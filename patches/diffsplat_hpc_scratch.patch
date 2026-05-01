@@ -1,0 +1,107 @@
+diff --git a/scripts/infer.sh b/scripts/infer.sh
+index a9ab7ed..205a12d 100644
+--- a/scripts/infer.sh
++++ b/scripts/infer.sh
+@@ -4,8 +4,29 @@ TAG=$3
+ shift 3  # remove $1~$3 for $@
+ 
+ # export HF_ENDPOINT=https://hf-mirror.com
+-export HF_HOME=~/.cache/huggingface
+-export TORCH_HOME=~/.cache/torch
++WRAPPER_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
++export DIFFSPLAT_PROJECT_ROOT="${DIFFSPLAT_PROJECT_ROOT:-${WRAPPER_ROOT}}"
++export DIFFSPLAT_CACHE_ROOT="${DIFFSPLAT_CACHE_ROOT:-${DIFFSPLAT_PROJECT_ROOT}/out/.cache}"
++export HF_HOME="${HF_HOME:-${DIFFSPLAT_CACHE_ROOT}/huggingface}"
++export HF_HUB_CACHE="${HF_HUB_CACHE:-${HF_HOME}/hub}"
++export TRANSFORMERS_CACHE="${TRANSFORMERS_CACHE:-${HF_HOME}/transformers}"
++export TORCH_HOME="${TORCH_HOME:-${DIFFSPLAT_CACHE_ROOT}/torch}"
++export XDG_CACHE_HOME="${XDG_CACHE_HOME:-${DIFFSPLAT_CACHE_ROOT}}"
++export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${DIFFSPLAT_CACHE_ROOT}/xdg_config}"
++export XDG_DATA_HOME="${XDG_DATA_HOME:-${DIFFSPLAT_CACHE_ROOT}/xdg_data}"
++export PIP_CACHE_DIR="${PIP_CACHE_DIR:-${DIFFSPLAT_CACHE_ROOT}/pip}"
++export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-${DIFFSPLAT_CACHE_ROOT}/triton}"
++export MPLCONFIGDIR="${MPLCONFIGDIR:-${DIFFSPLAT_CACHE_ROOT}/matplotlib}"
++export WANDB_DIR="${WANDB_DIR:-${DIFFSPLAT_PROJECT_ROOT}/out/wandb}"
++export WANDB_CACHE_DIR="${WANDB_CACHE_DIR:-${DIFFSPLAT_CACHE_ROOT}/wandb}"
++export WANDB_CONFIG_DIR="${WANDB_CONFIG_DIR:-${DIFFSPLAT_CACHE_ROOT}/wandb_config}"
++export IMAGEREWARD_CACHE_DIR="${IMAGEREWARD_CACHE_DIR:-${DIFFSPLAT_CACHE_ROOT}/ImageReward}"
++export U2NET_HOME="${U2NET_HOME:-${DIFFSPLAT_CACHE_ROOT}/u2net}"
++export TMPDIR="${TMPDIR:-${DIFFSPLAT_PROJECT_ROOT}/.tmp}"
++mkdir -p "$HF_HOME" "$HF_HUB_CACHE" "$TRANSFORMERS_CACHE" "$TORCH_HOME" \
++    "$XDG_CACHE_HOME" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$PIP_CACHE_DIR" \
++    "$TRITON_CACHE_DIR" "$MPLCONFIGDIR" "$WANDB_DIR" "$WANDB_CACHE_DIR" \
++    "$WANDB_CONFIG_DIR" "$IMAGEREWARD_CACHE_DIR" "$U2NET_HOME" "$TMPDIR"
+ export NCCL_DEBUG=VERSION
+ 
+ python3 ${FILE} \
+diff --git a/scripts/train.sh b/scripts/train.sh
+index 2d6b1a5..b6fbf26 100644
+--- a/scripts/train.sh
++++ b/scripts/train.sh
+@@ -1,8 +1,8 @@
+-NUM_MACHINES=1
+-NUM_LOCAL_GPUS=8
+-MACHINE_RANK=0
+-MAIN_MACHINE_IP=""  # fill your machine IP here
+-MAIN_MACHINE_PROT=""  # fill your machine port here
++NUM_MACHINES=${NUM_MACHINES:-1}
++NUM_LOCAL_GPUS=${NUM_LOCAL_GPUS:-8}
++MACHINE_RANK=${MACHINE_RANK:-0}
++MAIN_MACHINE_IP="${MAIN_MACHINE_IP:-}"  # fill your machine IP here
++MAIN_MACHINE_PROT="${MAIN_MACHINE_PROT:-}"  # fill your machine port here
+ 
+ FILE=$1
+ CONFIG_FILE=$2
+@@ -10,8 +10,29 @@ TAG=$3
+ shift 3  # remove $1~$3 for $@
+ 
+ # export HF_ENDPOINT=https://hf-mirror.com
+-export HF_HOME=~/.cache/huggingface
+-export TORCH_HOME=~/.cache/torch
++WRAPPER_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
++export DIFFSPLAT_PROJECT_ROOT="${DIFFSPLAT_PROJECT_ROOT:-${WRAPPER_ROOT}}"
++export DIFFSPLAT_CACHE_ROOT="${DIFFSPLAT_CACHE_ROOT:-${DIFFSPLAT_PROJECT_ROOT}/out/.cache}"
++export HF_HOME="${HF_HOME:-${DIFFSPLAT_CACHE_ROOT}/huggingface}"
++export HF_HUB_CACHE="${HF_HUB_CACHE:-${HF_HOME}/hub}"
++export TRANSFORMERS_CACHE="${TRANSFORMERS_CACHE:-${HF_HOME}/transformers}"
++export TORCH_HOME="${TORCH_HOME:-${DIFFSPLAT_CACHE_ROOT}/torch}"
++export XDG_CACHE_HOME="${XDG_CACHE_HOME:-${DIFFSPLAT_CACHE_ROOT}}"
++export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${DIFFSPLAT_CACHE_ROOT}/xdg_config}"
++export XDG_DATA_HOME="${XDG_DATA_HOME:-${DIFFSPLAT_CACHE_ROOT}/xdg_data}"
++export PIP_CACHE_DIR="${PIP_CACHE_DIR:-${DIFFSPLAT_CACHE_ROOT}/pip}"
++export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-${DIFFSPLAT_CACHE_ROOT}/triton}"
++export MPLCONFIGDIR="${MPLCONFIGDIR:-${DIFFSPLAT_CACHE_ROOT}/matplotlib}"
++export WANDB_DIR="${WANDB_DIR:-${DIFFSPLAT_PROJECT_ROOT}/out/wandb}"
++export WANDB_CACHE_DIR="${WANDB_CACHE_DIR:-${DIFFSPLAT_CACHE_ROOT}/wandb}"
++export WANDB_CONFIG_DIR="${WANDB_CONFIG_DIR:-${DIFFSPLAT_CACHE_ROOT}/wandb_config}"
++export IMAGEREWARD_CACHE_DIR="${IMAGEREWARD_CACHE_DIR:-${DIFFSPLAT_CACHE_ROOT}/ImageReward}"
++export U2NET_HOME="${U2NET_HOME:-${DIFFSPLAT_CACHE_ROOT}/u2net}"
++export TMPDIR="${TMPDIR:-${DIFFSPLAT_PROJECT_ROOT}/.tmp}"
++mkdir -p "$HF_HOME" "$HF_HUB_CACHE" "$TRANSFORMERS_CACHE" "$TORCH_HOME" \
++    "$XDG_CACHE_HOME" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$PIP_CACHE_DIR" \
++    "$TRITON_CACHE_DIR" "$MPLCONFIGDIR" "$WANDB_DIR" "$WANDB_CACHE_DIR" \
++    "$WANDB_CONFIG_DIR" "$IMAGEREWARD_CACHE_DIR" "$U2NET_HOME" "$TMPDIR"
+ export NCCL_DEBUG=VERSION
+ 
+ accelerate launch \
+diff --git a/src/utils/metrics.py b/src/utils/metrics.py
+index c5dd796..1877136 100644
+--- a/src/utils/metrics.py
++++ b/src/utils/metrics.py
+@@ -2,6 +2,7 @@ from typing import *
+ from PIL.Image import Image as PILImage
+ from torch import Tensor
+ 
++import os
+ import numpy as np
+ from skimage.metrics import structural_similarity as calculate_ssim
+ import torch
+@@ -26,7 +27,7 @@ class TextConditionMetrics:
+         self.tokenizer = CLIPTokenizer.from_pretrained(clip_name)
+         self.text_encoder = CLIPTextModelWithProjection.from_pretrained(clip_name).to(f"cuda:{device_idx}").eval()
+ 
+-        self.rm_model = RM.load(rm_name)
++        self.rm_model = RM.load(rm_name, download_root=os.environ.get("IMAGEREWARD_CACHE_DIR"))
+ 
+         self.device = f"cuda:{device_idx}"
+ 

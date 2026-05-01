@@ -8,6 +8,11 @@ from pathlib import Path
 from typing import Sequence
 
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_CACHE_ROOT = PROJECT_ROOT / "out" / ".cache"
+DEFAULT_TMPDIR = PROJECT_ROOT / ".tmp"
+
+
 def expand(path: str | Path) -> Path:
     return Path(path).expanduser().resolve()
 
@@ -33,7 +38,21 @@ def run(
 def command_env(hf_home: str, torch_home: str, hf_endpoint: str | None) -> dict[str, str]:
     env = os.environ.copy()
     env["HF_HOME"] = str(expand(hf_home))
+    env["HF_HUB_CACHE"] = env.get("HF_HUB_CACHE", str(Path(env["HF_HOME"]) / "hub"))
+    env["TRANSFORMERS_CACHE"] = env.get("TRANSFORMERS_CACHE", str(Path(env["HF_HOME"]) / "transformers"))
     env["TORCH_HOME"] = str(expand(torch_home))
+    env["XDG_CACHE_HOME"] = env.get("XDG_CACHE_HOME", str(DEFAULT_CACHE_ROOT))
+    env["XDG_CONFIG_HOME"] = env.get("XDG_CONFIG_HOME", str(DEFAULT_CACHE_ROOT / "xdg_config"))
+    env["XDG_DATA_HOME"] = env.get("XDG_DATA_HOME", str(DEFAULT_CACHE_ROOT / "xdg_data"))
+    env["PIP_CACHE_DIR"] = env.get("PIP_CACHE_DIR", str(DEFAULT_CACHE_ROOT / "pip"))
+    env["TRITON_CACHE_DIR"] = env.get("TRITON_CACHE_DIR", str(DEFAULT_CACHE_ROOT / "triton"))
+    env["MPLCONFIGDIR"] = env.get("MPLCONFIGDIR", str(DEFAULT_CACHE_ROOT / "matplotlib"))
+    env["WANDB_DIR"] = env.get("WANDB_DIR", str(PROJECT_ROOT / "out" / "wandb"))
+    env["WANDB_CACHE_DIR"] = env.get("WANDB_CACHE_DIR", str(DEFAULT_CACHE_ROOT / "wandb"))
+    env["WANDB_CONFIG_DIR"] = env.get("WANDB_CONFIG_DIR", str(DEFAULT_CACHE_ROOT / "wandb_config"))
+    env["IMAGEREWARD_CACHE_DIR"] = env.get("IMAGEREWARD_CACHE_DIR", str(DEFAULT_CACHE_ROOT / "ImageReward"))
+    env["U2NET_HOME"] = env.get("U2NET_HOME", str(DEFAULT_CACHE_ROOT / "u2net"))
+    env["TMPDIR"] = env.get("TMPDIR", str(DEFAULT_TMPDIR))
     if hf_endpoint:
         env["HF_ENDPOINT"] = hf_endpoint
     return env
@@ -62,10 +81,10 @@ def add_out_dir(parser: argparse.ArgumentParser) -> None:
 
 
 def add_hf_args(parser: argparse.ArgumentParser, *, include_torch_home: bool = False) -> None:
-    parser.add_argument("--hf-home", default="~/.cache/huggingface", help="Hugging Face cache directory.")
+    parser.add_argument("--hf-home", default=str(DEFAULT_CACHE_ROOT / "huggingface"), help="Hugging Face cache directory.")
     parser.add_argument("--hf-endpoint", default=os.environ.get("HF_ENDPOINT"), help="Optional Hugging Face endpoint mirror.")
     if include_torch_home:
-        parser.add_argument("--torch-home", default="~/.cache/torch", help="Torch cache directory.")
+        parser.add_argument("--torch-home", default=str(DEFAULT_CACHE_ROOT / "torch"), help="Torch cache directory.")
 
 
 def add_dry_run(parser: argparse.ArgumentParser) -> None:
